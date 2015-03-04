@@ -9,10 +9,18 @@ var options = ['iOS', 'Android', 'Windows']
 // show up the drop down
 var choice = createSelect('Choose a platform',options, 0)
 
-// ask user for class prefix
+var name;
 
-var name = [doc askForUserInput:"Class Prefix?" initialValue:"SK_"]
+if (choice[1] == 0) 
+{
+	// ask user for class prefix
+
+	name = [doc askForUserInput:"Class Prefix?" initialValue:"SK_"]
+}
 
 // lets generate our stuff
 generateFilesForPlatform(choice[1], name);
+
+
+
 
