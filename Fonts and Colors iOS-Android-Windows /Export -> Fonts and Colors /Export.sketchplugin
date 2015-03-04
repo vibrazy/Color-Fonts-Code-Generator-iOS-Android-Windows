@@ -1,0 +1,18 @@
+#import '../sandbox.js'
+#import '../common.js'
+#import '../generator.js'
+
+// we need to ask the user which platform they would like
+
+var options = ['iOS', 'Android', 'Windows']
+
+// show up the drop down
+var choice = createSelect('Choose a platform',options, 0)
+
+// ask user for class prefix
+
+var name = [doc askForUserInput:"Class Prefix?" initialValue:"SK_"]
+
+// lets generate our stuff
+generateFilesForPlatform(choice[1], name);
+
