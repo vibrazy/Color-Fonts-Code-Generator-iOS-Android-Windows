@@ -149,7 +149,7 @@ function hexToRgb(hex) {
     } : null;
 }
 
-// drop down
+// drop down box with options
 
 function createSelect(msg, items, selectedItemIndex)
 {
