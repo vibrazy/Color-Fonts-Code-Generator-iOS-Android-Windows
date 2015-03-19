@@ -1,7 +1,7 @@
 #import '../sandbox.js'
 #import '../common.js'
 
-// We are going to generate 2 Pages, 1 for Typography Swatch and 1 for Color Swatch
+// We are going to generate 2 Pages, 1 for Typography Swatch and 1 for Color Swatch.
 
 generatePageWithName('Font Swatch', 'text', '#666666');
 generatePageWithName('Color Swatch', 'rectangle', '#666666');

@@ -1,5 +1,20 @@
 var newLine = "\n";
 
+var suggestedColorsPlistTemplate = [
+'<?xml version="1.0" encoding="UTF-8"?>',
+'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">',
+'<plist version="1.0">',
+'<dict>',
+'  <key>colors</key>',
+'  <dict>',
+'{template}',
+'</dict>',
+'  <key>useMyColors</key>',
+'  <true/>',
+'</dict>',
+'</plist>'
+].join('');
+
 function generateFilesForPlatform(platform, prefix)
 {
 
@@ -67,6 +82,9 @@ function generateFontFilesForPlatform(platform, prefix, classType, callback)
   var codes = [];
   var output = '';
 
+  //https://github.com/jwaitzel/SuggestedColors/
+  //This will generate a Plist file that can be used by the above plugin in XCode
+  var suggestedColors = '';
 
   var parsingFont = classType == 'UIFont';
   var swatchLayers = getSwatchLayer(parsingFont ? 'Font Swatch' : 'Color Swatch');
@@ -76,6 +94,9 @@ function generateFontFilesForPlatform(platform, prefix, classType, callback)
   var isIOS = platform == 0;
   var isAndroid = platform == 1;
   var isWindows = !isIOS && !isAndroid;
+
+  //suggested color template
+  var keyTemplate = '<key>{key}</key>';
 
   for (var i=0; i < [swatchLayers count]; i++)
   {
@@ -96,7 +117,16 @@ function generateFontFilesForPlatform(platform, prefix, classType, callback)
           methodSignatures.push(methodName);
           // 
           var codeSignature = callback(layer)
-          output = generateLineForPlatform(methodName, codeSignature, platform, output, callback);            
+          output = generateLineForPlatform(methodName, codeSignature, platform, output, callback);
+
+          if(!parsingFont)
+          {
+              /*suggested color*/
+              var hexColorForLayer = generateSuggestedColorsHex(layer);    
+              suggestedColors += keyTemplate.replace('{key}', swatchName);         
+              suggestedColors += hexColorForLayer; 
+          }
+                      
         }
         else if (isAndroid)
         {
@@ -141,6 +171,8 @@ function generateFontFilesForPlatform(platform, prefix, classType, callback)
     }
   }
 
+  
+
   // BIG IF STATEMENT HERE FOR PLATFORM
   if (isIOS) 
   {
@@ -170,6 +202,14 @@ function generateFontFilesForPlatform(platform, prefix, classType, callback)
 
     saveFile(mPath, mPrefix);
     saveFile(hPath, hPrefix);
+
+    //save the file
+    if(!parsingFont)
+    {      
+      suggestedColorsPlistTemplate = suggestedColorsPlistTemplate.replace('{template}', suggestedColors);         
+      var path = getDocumentPath() + "SuggestedColors.plist";
+      saveFile(path, suggestedColorsPlistTemplate);
+    }
   }
   else if (isAndroid)
   {
@@ -193,6 +233,7 @@ function generateFontFilesForPlatform(platform, prefix, classType, callback)
   }
 
 }
+
 
 function getSwatchLayer(name)
 {
@@ -268,6 +309,28 @@ function generateColorAndroid(layer)
   return  "<color name=\"{template}\">#"+rgba2hex(red,green,blue,alpha)+"</color>";
   
 }
+
+
+function generateSuggestedColorsHex(layer)
+{
+    
+    var hexTemplate = '<string>{hex}</string>';
+    return hexTemplate.replace('{hex}',hexColorForLayer(layer));
+}
+
+function hexColorForLayer(layer)
+{
+  var fill = layer.style().fills().firstObject();
+  var red = parseInt((fill.color().red().toFixed(3) * 255).toFixed(0));
+  var green = parseInt((fill.color().green().toFixed(3) * 255).toFixed(0));
+  var blue = parseInt((fill.color().blue().toFixed(3) * 255).toFixed(0));
+  var alpha = parseInt((fill.color().alpha().toFixed(3) * 255).toFixed(0));
+
+   var hexColor = rgba2hex(red,green,blue,alpha);
+   hexColor = hexColor.substring(0, hexColor.length - 2);
+   return hexColor;
+}
+
 
 // convert RGBA color data to hex
 function rgba2hex(r, g, b, a) {
