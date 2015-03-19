@@ -224,19 +224,21 @@ function generateFontiOS(layer)
 
 function generateFontAndroid(layer)
 {
-  output += newLine;
-  var output = "  <item name=\"typeface\">"+layer.fontPostscriptName()+".ttf</item>";
+  var output = newLine;
+  output = "  <item name=\"typeface\">"+layer.fontPostscriptName()+".ttf</item>";
   output += newLine;
   output += "  <item name=\"android:textSize\">"+layer.fontSize()+"sp</item>";
   output += newLine;
+
+  log(output);
 
   return output;
 }
 
 function generateFontWindows(layer)
 {  
-  output += newLine;
-  var output = "  <Setter Property=\"FontFamily\" Value=\""+layer.fontPostscriptName()+"\" />";
+  var output = newLine;
+  output = "  <Setter Property=\"FontFamily\" Value=\""+layer.fontPostscriptName()+"\" />";
   output += newLine;
   output += "  <Setter Property=\"FontSize\" Value=\""+layer.fontSize()+"\" />";
   output += newLine;
